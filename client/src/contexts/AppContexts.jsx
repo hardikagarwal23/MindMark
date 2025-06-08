@@ -50,6 +50,13 @@ const AppContextProvider = (props) => {
       setLoadingProfile(false);
     } catch (error) {
       console.error("Error fetching user profile:", error);
+         setToken("");
+      setUserEmail("");
+      setUserPhoto("");
+      localStorage.removeItem("token");
+      navigate("/");
+
+      setLoadingProfile(false);
     }
   };
 
@@ -83,9 +90,8 @@ const AppContextProvider = (props) => {
       await signOut(auth);
       setToken("");
       setUserEmail("");
+      setUserPhoto("");
       localStorage.removeItem("token");
-      // localStorage.removeItem("userEmail");
-      // localStorage.removeItem("userPhoto");
       navigate('/');
 
     } catch (error) {
