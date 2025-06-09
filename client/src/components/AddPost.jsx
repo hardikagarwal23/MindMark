@@ -208,7 +208,7 @@ const AddPost = () => {
       <div className="flex flex-col md:flex-row gap-6 min-h-[500px]">
         {/* Image Upload Section */}
         <div className="w-full md:w-1/2 p-4 rounded-md bg-white shadow-md flex flex-col">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">📷 Upload Image</h2>
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">🖼️ Upload Image:</h2>
           <input
             ref={fileInputRef}
             type="file"
@@ -239,7 +239,7 @@ const AddPost = () => {
         <div className="w-full md:w-1/2 bg-white shadow-md rounded-lg p-4 flex flex-col">
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-medium mb-2">
-            💡What's on your mind?
+              💡What's on your mind?
             </label>
             <input
               type="text"
@@ -256,11 +256,11 @@ const AddPost = () => {
             onClick={handleClick}
             className={`px-4 py-2 text-sm rounded transition flex items-center justify-center gap-2
   ${description
-    ? loading
-      ? 'bg-blue-500 text-white cursor-not-allowed'
-      : 'bg-blue-500 text-white hover:bg-blue-600 cursor-pointer'
-    : 'bg-gray-300 text-gray-500 pointer-events-none'
-  }`}>
+                ? loading
+                  ? 'bg-blue-500 text-white cursor-not-allowed'
+                  : 'bg-blue-500 text-white hover:bg-blue-600 cursor-pointer'
+                : 'bg-gray-300 text-gray-500 pointer-events-none'
+              }`}>
             {loading ? (
               <>
                 <ClipLoader size={20} color="#ffffff" />

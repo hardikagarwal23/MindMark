@@ -5,7 +5,7 @@ const LoginPage = ({ handleGoogleLogin }) => {
 
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-blue-200">
+    <div className="flex items-center justify-center min-h-screen px-2 bg-blue-200">
       <div className="bg-white p-8 rounded-3xl shadow-lg w-full max-w-lg">
         <div className="text-center mb-6">
           <h1 className="text-4xl font-bold flex justify-center cursor-pointer">MindMark

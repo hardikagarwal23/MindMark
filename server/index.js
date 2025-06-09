@@ -8,6 +8,7 @@ import profileRoute from './routes/profile.js';
 import connectDB from './config/mongoDB.js';
 import newPostsRoute from './routes/newPosts.js';
 import getPaginatedPosts from './routes/postController.js';
+import selectedPostRoute from './routes/selectedPost.js';
 import admin from "firebase-admin";
 
 dotenv.config();
@@ -52,6 +53,10 @@ const startServer = async () => {
     app.use('/api/verify-user', verifyRoute);
     app.use('/api/profile-data', profileRoute);
     app.use("/api/all-posts",getPaginatedPosts);
+    app.use("/api/post",selectedPostRoute);
+
+
+
 
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);

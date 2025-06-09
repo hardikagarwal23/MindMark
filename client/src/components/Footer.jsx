@@ -14,7 +14,7 @@ const Footer = () => {
         <nav className="mt-6 flex justify-center flex-wrap gap-6 text-sm font-medium">
           <Link to="/" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             className="hover:text-blue-900">Home</Link>
-          <Link to="/all-posts" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          <Link to="/all-posts" onClick={() => window.scrollTo({ top: 0 })}
             className="hover:text-blue-900">Posts</Link>
           <Link to="/about" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             className="hover:text-blue-900">About</Link>

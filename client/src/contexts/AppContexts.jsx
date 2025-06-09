@@ -7,8 +7,7 @@ import { useNavigate } from "react-router-dom";
 export const AppContext = createContext();
 
 const AppContextProvider = (props) => {
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
-  const [error, setError] = useState('');
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const [loadingProfile, setLoadingProfile] = useState(false);
 
   const [allPosts, setAllPosts] = useState([]);
@@ -18,6 +17,12 @@ const AppContextProvider = (props) => {
 
   const [userEmail, setUserEmail] = useState("");
   const [userPhoto, setUserPhoto] = useState("");
+
+  const[previousPage,setPreviousPage]=useState("");
+
+  const [posts, setPosts] = useState([]);
+  const [page, setPage] = useState(2);
+  const [hasMore, setHasMore] = useState(true);
 
 
   const navigate = useNavigate();
@@ -29,7 +34,6 @@ const AppContextProvider = (props) => {
       setAllPosts(data);
       setLoading(false);
     } catch (err) {
-      setError("Error fetching entries.");
       setLoading(false);
     }
   };
@@ -49,7 +53,14 @@ const AppContextProvider = (props) => {
       setUserPhoto(data.user.userPhoto);
       setLoadingProfile(false);
     } catch (error) {
-      console.error("Error fetching user profile:", error);
+      console.error("Error fetching user-profile:", error);
+      setToken("");
+      setUserEmail("");
+      setUserPhoto("");
+      localStorage.removeItem("token");
+      navigate("/");
+
+      setLoadingProfile(false);
     }
   };
 
@@ -74,7 +85,7 @@ const AppContextProvider = (props) => {
       fetchUserProfile(token);
       getAllPosts();
     }
-  }, []);
+  }, [token]);
 
 
 
@@ -83,9 +94,8 @@ const AppContextProvider = (props) => {
       await signOut(auth);
       setToken("");
       setUserEmail("");
+      setUserPhoto("");
       localStorage.removeItem("token");
-      // localStorage.removeItem("userEmail");
-      // localStorage.removeItem("userPhoto");
       navigate('/');
 
     } catch (error) {
@@ -100,14 +110,18 @@ const AppContextProvider = (props) => {
     backendUrl,
     getAllPosts,
     token,
-    error,
     handleGoogleLogin,
     handleLogout,
     userEmail,
-    userPhoto, loadingProfile
+    userPhoto, loadingProfile,
+    previousPage,setPreviousPage,
+      posts, setPosts,
+      page, setPage,
+      hasMore, setHasMore,
+
   };
 
-  return <AppContext.Provider value={value}>{props.children}</AppContext.Provider>;
+  return <AppContext.Provider value={value} >{props.children}</AppContext.Provider>;
 };
 
 export default AppContextProvider;
