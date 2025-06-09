@@ -69,7 +69,7 @@ const PostDetails = () => {
           by <span className='font-medium'>{post.email}</span>
         </div>
 
-        <div className="text-base text-gray-800 mt-2">{post.postContent}</div>
+        <div className="font-serif text-base text-gray-800 mt-2">{post.postContent}</div>
 
         <div className="text-sm mt-2">
           <span className="font-semibold text-gray-600">Topics:-</span>
