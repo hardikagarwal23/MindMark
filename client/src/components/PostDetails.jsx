@@ -38,10 +38,13 @@ const PostDetails = () => {
     }
   };
 
+  useEffect(() => {
+    window.scrollTo({ top: 0 });
+  }, []);
 
   return loading ? (<div className='flex justify-center items-center h-screen'><BeatLoader color="#64B5F6" /></div>) : (
 
-    <div className="bg-blue-50 p-6 flex justify-center items-center z-50">
+    <div className="bg-blue-50 py-6 flex justify-center items-center">
       <div className=" bg-white p-6 rounded-xl w-full max-w-3xl overflow-auto relative shadow-xl">
         <button
           onClick={() => { previousPage ? navigate(-1) : navigate('/') }}
@@ -69,7 +72,7 @@ const PostDetails = () => {
           by <span className='font-medium'>{post.email}</span>
         </div>
 
-        <div className="font-serif text-base text-gray-800 mt-2">{post.postContent}</div>
+        <div className="font-serif text-base text-gray-800 mt-2 whitespace-pre-wrap">{post.postContent}</div>
 
         <div className="text-sm mt-2">
           <span className="font-semibold text-gray-600">Topics:-</span>

@@ -16,9 +16,8 @@ router.post('/', async (req, res) => {
   }
 
   const prompt = `
-Generate a less than one-line catchy caption and a long detailed post based on this description: "${description}".  
-Use a warm tone for emotional stories, or a formal tone for news/informational content.  
-Keep the language clear and easy to understand.
+Generate a less than one-line catchy caption and a detailed post based on this description: "${description}".  
+Use a warm tone for emotional stories and a formal, clear tone for news or informational content.
 Return ONLY a JSON format with two keys:  
 {
   "caption": "...",  
@@ -31,8 +30,8 @@ Do not include any other extra character and mark.
     const response = await axios.post(
       'https://openrouter.ai/api/v1/chat/completions',
       {
-        model: 'meta-llama/llama-3.3-8b-instruct:free',
-        messages: [{ role: 'user', content: prompt }],
+      model:'mistralai/mistral-7b-instruct:free',
+      messages: [{ role: 'user', content: prompt }],
       },
       {
         headers: {
@@ -60,7 +59,7 @@ Do not include any other extra character and mark.
 
     return res.json({ caption, postContent });
   } catch (error) {
-    console.error("Error:", error.error.message);
+    console.error("Error:", error);
     return res.status(500).json({ error: 'Failed to generate.' });
   }
 });

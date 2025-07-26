@@ -88,7 +88,6 @@ const AppContextProvider = (props) => {
   }, [token]);
 
 
-
   const handleLogout = async () => {
     try {
       await signOut(auth);

@@ -30,7 +30,6 @@ router.post('/', async (req, res) => {
   }
 });
 
-
 router.get('/', async (req, res) => {
   try {
     const allEntries = await entries.find().sort({ createdAt: -1 });
@@ -39,7 +38,6 @@ router.get('/', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
 
 export default router;
 

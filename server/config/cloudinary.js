@@ -15,7 +15,6 @@ const storage = new CloudinaryStorage({
   cloudinary,
   params: {
     folder: 'image-diary',
-    allowed_formats: ['jpg', 'png', 'jpeg', 'webp', 'gif']
   },
 });
 

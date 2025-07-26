@@ -3,7 +3,7 @@ import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
 import chroma from 'chroma-js';
 import axios from 'axios';
-import { MoonLoader} from 'react-spinners';
+import { ClipLoader, MoonLoader} from 'react-spinners';
 import { AppContext } from '../contexts/AppContexts';
 
 const animatedComponents = makeAnimated();
