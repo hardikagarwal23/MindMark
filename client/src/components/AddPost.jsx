@@ -3,7 +3,7 @@ import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
 import chroma from 'chroma-js';
 import axios from 'axios';
-import { ClipLoader, HashLoader } from 'react-spinners';
+import { MoonLoader} from 'react-spinners';
 import { AppContext } from '../contexts/AppContexts';
 
 const animatedComponents = makeAnimated();
@@ -41,8 +41,8 @@ const options = [
   { value: 'parenting', label: 'Parenting', color: '#FFA000' },
   { value: 'life-lessons', label: 'Life Lessons', color: '#8E24AA' },
   { value: 'space', label: 'Space', color: '#501f94' },
-  { value: 'sports', label: 'Sports', color: '#E64A19' }
-
+  { value: 'sports', label: 'Sports', color: '#E64A19' },
+  { value: 'wildlife', label: 'Wildlife', color: '#55903F' }
 ];
 
 
@@ -114,22 +114,22 @@ const AddPost = () => {
   const [description, setDescription] = useState('');
   const [postContent, setPostContent] = useState('');
   const [topic, setTopic] = useState([]);
-  const [uploadUrl, setUploadUrl] = useState(null);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
-
+  const [file,setFile]=useState(null);
+  const [postUploading,setPostUploading]=useState(false);
   const fileInputRef = useRef();
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const { getAllPosts, token, userEmail } = useContext(AppContext);
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setPreview(URL.createObjectURL(file));
-      setUploadUrl(null);
-      handleUpload(file);
-    }
-  };
+const handleImageChange = (e) => {
+  const selectedFile = e.target.files[0];
+  if (selectedFile) {
+    setFile(selectedFile);
+    setPreview(URL.createObjectURL(selectedFile));
+  }
+};
+
 
   const handleUpload = async (file) => {
     setUploading(true);
@@ -139,10 +139,10 @@ const AddPost = () => {
       const res = await axios.post(`${backendUrl}/api/upload`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-
-      setUploadUrl(res.data.url);
+      return res.data.url;
     } catch (err) {
-      setUploadUrl(null);
+     console.error('Image upload failed:', err);
+     return null;
     } finally {
       setUploading(false);
     }
@@ -178,11 +178,18 @@ const AddPost = () => {
       return;
     }
     try {
+      setPostUploading(true);
       const email = userEmail;
+      const imageUrl = await handleUpload(file);
+      if(!imageUrl){
+        alert("Image upload failed. Please try again.");
+        setUploading(false);
+        return;
+      }
       const res = await axios.post(`${backendUrl}/api/new-posts`, {
         email,
         topic,
-        uploadUrl,
+        uploadUrl:imageUrl,
         caption,
         postContent,
       });
@@ -190,8 +197,8 @@ const AddPost = () => {
       setCaption('');
       setPostContent('');
       setPreview(null);
-      setUploadUrl(null);
       setDescription('');
+      setPostUploading(false);
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
@@ -205,10 +212,13 @@ const AddPost = () => {
 
   return (
     <div className="py-4 px-4 sm:px-8 md:px-24 bg-blue-100 w-full mx-auto mt-10">
-      <div className="flex flex-col md:flex-row gap-6 min-h-[500px]">
+      <div className={` relative z-50 flex flex-col md:flex-row gap-6 min-h-[500px] ${postUploading ? 'cursor-not-allowed pointer-events-none opacity-90'  : ''}`}>
+         {postUploading ? <div className='absolute z-60 inset-0 flex justify-center items-center w-full h-full'> 
+        <MoonLoader size={70} color="#004a9d" />
+         </div> : ''}
         {/* Image Upload Section */}
         <div className="w-full md:w-1/2 p-4 rounded-md bg-white shadow-md flex flex-col">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">🖼️ Upload Image:</h2>
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">Upload Image:</h2>
           <input
             ref={fileInputRef}
             type="file"
@@ -217,16 +227,13 @@ const AddPost = () => {
             className="block file:cursor-pointer w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200"
           />
           <div className="mt-4 flex-1 flex items-center justify-center bg-gray-50 rounded-md shadow-inner border border-dashed border-gray-300">
-            {uploading ? (
-              <div className="flex justify-center items-center w-full h-full">
-                <HashLoader size={40} color="#3b82f6" />
-              </div>
-            ) : preview ? (
-              <img
+            {
+             preview ? (
+              (<img
                 src={preview}
                 alt="Preview"
                 className="w-full h-full object-contain rounded-md shadow-lg"
-              />
+              />) 
             ) : (
               <p className="text-lg text-gray-500 text-center p-8">
                 🌟 Upload an image to begin!
@@ -305,10 +312,11 @@ const AddPost = () => {
             />
           </div>
         </div>
+        
       </div>
 
       {/*add button*/}
-      {uploadUrl && !uploading && preview && caption && postContent && topic.length > 0 && (
+      {!postUploading && preview && caption && postContent && topic.length > 0 && (
         <div
           onClick={addThisEntry}
           className="flex justify-center items-center bg-white p-4 shadow-lg rounded-md mt-4 hover:bg-gray-100 cursor-pointer"
@@ -321,3 +329,5 @@ const AddPost = () => {
 };
 
 export default AddPost;
+
+
