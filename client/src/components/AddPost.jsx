@@ -183,7 +183,7 @@ const handleImageChange = (e) => {
       const imageUrl = await handleUpload(file);
       if(!imageUrl){
         alert("Image upload failed. Please try again.");
-        setUploading(false);
+        setPostUploading(false);
         return;
       }
       const res = await axios.post(`${backendUrl}/api/new-posts`, {
