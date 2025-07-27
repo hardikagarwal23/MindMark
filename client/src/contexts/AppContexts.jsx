@@ -18,10 +18,8 @@ const AppContextProvider = (props) => {
   const [userEmail, setUserEmail] = useState("");
   const [userPhoto, setUserPhoto] = useState("");
 
-  const[previousPage,setPreviousPage]=useState("");
 
   const [posts, setPosts] = useState([]);
-  const [page, setPage] = useState(2);
   const [hasMore, setHasMore] = useState(true);
 
 
@@ -113,9 +111,7 @@ const AppContextProvider = (props) => {
     handleLogout,
     userEmail,
     userPhoto, loadingProfile,
-    previousPage,setPreviousPage,
       posts, setPosts,
-      page, setPage,
       hasMore, setHasMore,
 
   };

@@ -8,39 +8,51 @@ import { useNavigate } from 'react-router-dom';
 
 const AllPosts = () => {
   const [loading, setLoading] = useState(true);
-  const { backendUrl, posts, setPosts, page, setPage, hasMore, setHasMore,setPreviousPage } = useContext(AppContext);
+  const { backendUrl, posts, setPosts,hasMore, setHasMore } = useContext(AppContext);
   const limit = 6;
   const navigate = useNavigate();
 
 
-  const fetchPosts = async () => {
-    try {
-      const res = await axios.get(`${backendUrl}/api/all-posts?page=${page}&limit=${limit}`);
-      const data = res.data.posts;
-      setPosts((prev) => [...prev, ...data]);
-      setHasMore(res.data.hasMore);
-      setPage((prev) => prev + 1);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+ const fetchPosts = async () => {
+  try {
+    const lastPost = posts[posts.length - 1];
+    const afterId = lastPost ? lastPost._id : null;
+
+    const res = await axios.get(
+      `${backendUrl}/api/all-posts?limit=${limit}${afterId ? `&afterId=${afterId}` : ''}`
+    );
+
+    const newPosts = res.data.posts;
+
+    const uniqueNewPosts = newPosts.filter(
+      (post) => !posts.some((p) => p._id === post._id)
+    );
+
+    setPosts((prev) => [...prev, ...uniqueNewPosts]);
+    setHasMore(res.data.hasMore);
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 
-  const fetchInitialPosts = async () => {
-    try {
-      setLoading(true);
-      const res = await axios.get(`${backendUrl}/api/all-posts?page=1&limit=${limit}`);
-      const data = res.data.posts;
-      setPosts(data);
-      setHasMore(res.data.hasMore);
-      setLoading(false);
-      setIsRefreshing(false);
-    } catch (error) {
-      console.log(error);
-      setLoading(false);
-      setIsRefreshing(false);
-    }
-  };
+
+const fetchInitialPosts = async () => {
+  try {
+    setLoading(true);
+    const res = await axios.get(`${backendUrl}/api/all-posts?limit=${limit}`);
+    const data = res.data.posts;
+    setPosts(data);
+    setHasMore(res.data.hasMore);
+    setLoading(false);
+    setIsRefreshing(false);
+  } catch (error) {
+    console.log(error);
+    setLoading(false);
+    setIsRefreshing(false);
+  }
+};
+
 
 
   useEffect(() => {
@@ -67,10 +79,8 @@ const [isRefreshing, setIsRefreshing] = useState(false);
   onClick={() => {
     setIsRefreshing(true);
     setPosts([]);
-    setPage(2);
     setHasMore(true);
-    fetchInitialPosts()
-    setIsRefreshing(true);
+    fetchInitialPosts();
   }}
   className={`bg-blue-800 text-white w-8 h-8 p-1 text-2xl rounded-full cursor-pointer flex justify-center items-center shadow-lg transition-transform duration-60 
     ${isRefreshing ? 'animate-spin pointer-events-none opacity-70' : ''}`}
@@ -79,7 +89,6 @@ const [isRefreshing, setIsRefreshing] = useState(false);
 </div>
   </div>
 </div>
-
 
         {!loading && posts.length === 0 && (
           <p className="text-center mt-10 text-gray-500">No posts found.</p>

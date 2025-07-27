@@ -5,23 +5,26 @@ const router = express.Router();
 
 router.get('/', async (req, res) => {
   try {
-    const page = parseInt(req.query.page);
     const limit = parseInt(req.query.limit);
-    const skip = (page - 1) * limit;
+    const afterId = req.query.afterId;
 
-    const totalCount = await entries.countDocuments();
-    const posts = await entries.find()
-      .sort({ createdAt: -1 })
-      .skip(skip)
+    let query = {};
+    if (afterId) {
+      query = { _id: { $lt: afterId } }; 
+    }
+
+    const posts = await entries.find(query)
+      .sort({ _id: -1 })
       .limit(limit);
 
-    const hasMore = skip + posts.length < totalCount;
+    const hasMore = posts.length === limit;
 
     res.json({ posts, hasMore });
   } catch (error) {
-    res.status(500).json({ message: 'Failed to fetch posts', error });
+   res.status(500).json({ message: 'Failed to fetch posts', error });
   }
 });
+
 
 
 export default router;
