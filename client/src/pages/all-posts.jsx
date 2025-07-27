@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 
 const AllPosts = () => {
   const [loading, setLoading] = useState(true);
-  const { backendUrl, posts, setPosts,hasMore, setHasMore } = useContext(AppContext);
+  const { backendUrl, posts, setPosts,hasMore, setHasMore, setPreviousPage } = useContext(AppContext);
   const limit = 6;
   const navigate = useNavigate();
 
