@@ -32,10 +32,10 @@ router.post('/', async (req, res) => {
 
 router.get('/', async (req, res) => {
   try {
-    const allEntries = await entries.find().sort({ createdAt: -1 });
+    const allEntries = await entries.find().sort({ createdAt: -1 }).limit(18);;
     res.status(200).json(allEntries);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: err.message }); 
   }
 });
 

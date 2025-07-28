@@ -20,7 +20,7 @@ const NewPosts = () => {
       {!loading && allPosts.length === 0 && <p className="text-center text-red-500">Error fetching posts.</p>}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {allPosts.slice(0, 18).map((entry, idx) => (
+        {allPosts.map((entry, idx) => (
           <article
             key={idx}
             onClick={() => { setPreviousPage('/'); navigate(`/post/${entry._id}`) }}
