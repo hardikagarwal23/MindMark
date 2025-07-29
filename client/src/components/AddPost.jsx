@@ -3,7 +3,7 @@ import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
 import chroma from 'chroma-js';
 import axios from 'axios';
-import { ClipLoader, MoonLoader} from 'react-spinners';
+import { ClipLoader, PulseLoader} from 'react-spinners';
 import { AppContext } from '../contexts/AppContexts';
 
 const animatedComponents = makeAnimated();
@@ -211,11 +211,9 @@ const handleImageChange = (e) => {
 
 
   return (
-    <div className="py-4 px-4 sm:px-8 md:px-24 bg-blue-100 w-full mx-auto mt-10">
-      <div className={` relative z-50 flex flex-col md:flex-row gap-6 min-h-[500px] ${postUploading ? 'cursor-not-allowed pointer-events-none opacity-90'  : ''}`}>
-         {postUploading ? <div className='absolute z-60 inset-0 flex justify-center items-center w-full h-full'> 
-        <MoonLoader size={70} color="#004a9d" />
-         </div> : ''}
+    <div className={`py-4 px-4 sm:px-8 md:px-24 bg-blue-100 w-full mx-auto mt-10 ${postUploading ? 'cursor-not-allowed pointer-events-none opacity-90'  : ''}`}>
+      <div className={` relative z-50 flex flex-col md:flex-row gap-6 min-h-[500px] `}>
+        
         {/* Image Upload Section */}
         <div className="w-full md:w-1/2 p-4 rounded-md bg-white shadow-md flex flex-col">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">Upload Image:</h2>
@@ -316,12 +314,12 @@ const handleImageChange = (e) => {
       </div>
 
       {/*add button*/}
-      {!postUploading && preview && caption && postContent && topic.length > 0 && (
+      { preview && caption && postContent && topic.length > 0 && (
         <div
           onClick={addThisEntry}
           className="flex justify-center items-center bg-white p-4 shadow-lg rounded-md mt-4 hover:bg-gray-100 cursor-pointer"
         >
-          Add Post
+          {postUploading ? <PulseLoader color="#64B5F6" className='p-0.5'  /> : 'Add Post'} 
         </div>
       )}
     </div>
