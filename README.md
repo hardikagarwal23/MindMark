@@ -7,9 +7,13 @@ Live Demo: https://mindmark-rho.vercel.app
 🚀 Features:
 
 AI Post Generator – Turn a short idea into a full post or caption in seconds.
+
 Smooth Feed Scrolling – New posts load automatically as you scroll, so the page stays fast and never feels heavy.
+
 Secure Accounts – Sign up and log in safely to keep your content protected.
+
 Post Anything – Share your own thoughts or let the AI help you create something unique.
+
 Made for Every Screen – Works great on mobile, tablet, and desktop.
 
 
