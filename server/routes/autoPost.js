@@ -15,15 +15,15 @@ router.post('/', async (req, res) => {
     return res.status(400).json({ error: 'No description.' });
   }
 
-  const prompt = `
-Generate a less than one-line catchy caption and a detailed post based on this description: "${description}".  
+const prompt = `
+Generate a less-than-one-line catchy caption and a detailed post based on this description: "${description}".  
 Use a warm tone for emotional stories and a formal, clear tone for news or informational content.
-Return ONLY a JSON format with two keys:  
+Return ONLY a valid JSON object with exactly two keys:  
 {
   "caption": "...",  
   "content": "..."   
 }
-Do not include any other extra character and mark.
+Do not include any markdown, backticks, tags, or any extra characters outside the JSON.
 `;
 
   try {
