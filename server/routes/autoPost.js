@@ -15,38 +15,52 @@ router.post('/', async (req, res) => {
     return res.status(400).json({ error: 'No description.' });
   }
 
-const prompt = `
-Generate a less-than-one-line catchy caption and a detailed post based on this description: "${description}".  
-Use a warm tone for emotional stories and a formal, clear tone for news or informational content.
-Return ONLY a valid JSON object with exactly two keys:  
-{
-  "caption": "...",  
-  "content": "..."   
-}
-Do not include any markdown, backticks, tags, or any extra characters outside the JSON.
-`;
-
   try {
+
+    const systemMessage = `Task: Generate a JSON object with exactly two keys: "caption" and "content".
+Rules:
+1. "caption": A catchy, high-impact one-liner (no markdown).
+2. "content": A well-structured entry based on user intent (emotional=warm, news=formal).
+3. Constraints: NO markdown, NO bolding (**), NO headings (#). Use plain text and standard line breaks (\\n) only. 
+4. Output MUST be valid JSON.`;
+
     const response = await axios.post(
       'https://openrouter.ai/api/v1/chat/completions',
       {
-      model:'mistralai/mistral-7b-instruct:free',
-      messages: [{ role: 'user', content: prompt }],
+        model: 'xiaomi/mimo-v2-flash:free',
+        messages: [{ role: 'system', content: systemMessage },
+        { role: 'user', content: `Generate caption & content based on this description: "${description}"` }],
+        response_format: {
+          type: "json_schema",
+          json_schema: {
+            name: "caption_content",
+            strict: true,
+            schema: {
+              type: "object",
+              properties: {
+                "caption": { type: "string" },
+                "content": { type: "string", "description": "The main body of the user-generated content" }
+              },
+              required: ["caption", "content"]
+            }
+          }
+        },
       },
       {
         headers: {
           'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
           'Content-Type': 'application/json',
-        },
+        }
       }
     );
-    
-    const fullResponse = response.data.choices?.[0]?.message?.content || "{}";
 
+    const fullResponse = response.data.choices?.[0]?.message?.content || "{}";
+    const cleanedResponse = fullResponse.replace(/```json|```/g, "").trim();
     let parsed;
     try {
-      parsed = JSON.parse(fullResponse);
-    } catch {
+      parsed = JSON.parse(cleanedResponse);
+    } catch (error) {
+      console.log(cleanedResponse);
       return res.status(500).json({ error: 'AI response was not valid JSON.' });
     }
 
@@ -65,6 +79,3 @@ Do not include any markdown, backticks, tags, or any extra characters outside th
 });
 
 export default router;
-
-
-
