@@ -122,16 +122,15 @@ const AddPost = () => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const { getAllPosts, token, userEmail } = useContext(AppContext);
 
-const handleImageChange = (e) => {
+  const handleImageChange = (e) => {
   const selectedFile = e.target.files[0];
   if (selectedFile) {
     setFile(selectedFile);
     setPreview(URL.createObjectURL(selectedFile));
   }
 };
-
-
-  const handleUpload = async (file) => {
+  
+const handleUpload = async (file) => {
     setUploading(true);
     const formData = new FormData();
     formData.append('file', file);
@@ -148,6 +147,7 @@ const handleImageChange = (e) => {
     }
   };
 
+  
   const handleClick = () => {
     setLoading(true);
     autoPost().finally(() => setLoading(false));
@@ -161,17 +161,18 @@ const handleImageChange = (e) => {
     try {
       const res = await axios.post(
         `${backendUrl}/api/autoPost`,
-        { description },
+        { description: description.trim() },
         { headers: { 'Content-Type': 'application/json' } }
       );
       setCaption(res.data.caption);
       setPostContent(res.data.postContent);
     } catch (err) {
-      alert('Limit reached. Try again later.');
+      alert('Server is busy. Please try again later.');
       console.error('Auto-post error:', err.response?.data || err.message);
     }
   };
 
+  
   const addThisEntry = async () => {
     if (!token) {
       alert('You must be logged in to post.');
@@ -207,8 +208,6 @@ const handleImageChange = (e) => {
       console.log('Not added. Error:', error);
     }
   };
-
-
 
   return (
     <div className={`py-4 px-4 sm:px-8 md:px-24 bg-blue-100 w-full mx-auto mt-10 ${postUploading ? 'cursor-not-allowed pointer-events-none opacity-90'  : ''}`}>
@@ -260,7 +259,7 @@ const handleImageChange = (e) => {
             disabled={loading}
             onClick={handleClick}
             className={`px-4 py-2 text-sm rounded transition flex items-center justify-center gap-2
-  ${description
+  ${description.trim()
                 ? loading
                   ? 'bg-blue-500 text-white cursor-not-allowed'
                   : 'bg-blue-500 text-white hover:bg-blue-600 cursor-pointer'
@@ -327,5 +326,3 @@ const handleImageChange = (e) => {
 };
 
 export default AddPost;
-
-
