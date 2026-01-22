@@ -32,7 +32,7 @@ router.post('/', async (req, res) => {
 
 router.get('/', async (req, res) => {
   try {
-    const allEntries = await entries.find().sort({ createdAt: -1 }).limit(18);;
+    const allEntries = await entries.find().sort({ createdAt: -1 }).limit(18).select('caption uploadUrl date email topic');
     res.status(200).json(allEntries);
   } catch (err) {
     res.status(500).json({ error: err.message }); 
