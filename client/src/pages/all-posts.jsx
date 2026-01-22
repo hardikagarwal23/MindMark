@@ -156,7 +156,7 @@ const AllPosts = () => {
           </div>
 
           {/* TARGET ELEMENT */}
-          <div ref={targetRef} className="h-20 flex justify-center items-center bg-amber-700">
+          <div ref={targetRef} className="h-20 flex justify-center items-center">
             {isFetchingMore ? (
               <BeatLoader color="#64B5F6" />
             ) : (
