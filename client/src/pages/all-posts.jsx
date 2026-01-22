@@ -79,11 +79,7 @@ const AllPosts = () => {
     observer.observe(target);
     return () => observer.disconnect();
   }, [hasMore, isFetchingMore, posts.length]);
-
-  const handlePostClick = (postId) => {
-    setPreviousPage('/all-posts');
-    navigate(`/post/${postId}`);
-  };
+  
 
   return (
     <div className="p-4 sm:p-6 bg-blue-50 min-h-screen">
