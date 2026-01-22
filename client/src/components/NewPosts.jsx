@@ -20,9 +20,9 @@ const NewPosts = () => {
       {!loading && allPosts.length === 0 && <p className="text-center text-red-500">Error fetching posts.</p>}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {allPosts.map((entry, idx) => (
+        {allPosts.map((entry) => (
           <article
-            key={idx}
+            key={entry._id}
             onClick={() => { setPreviousPage('/'); navigate(`/post/${entry._id}`) }}
             className="bg-white border border-blue-200 rounded-xl shadow-md p-4 flex flex-col cursor-pointer transition-transform transform hover:scale-95 hover:bg-blue-50 duration-300"
           >
