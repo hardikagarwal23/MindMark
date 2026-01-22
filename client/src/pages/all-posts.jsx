@@ -1,123 +1,121 @@
-import React, { useContext, useEffect, useState } from 'react';
-import InfiniteScroll from 'react-infinite-scroll-component';
-import { BeatLoader} from 'react-spinners';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { BeatLoader } from 'react-spinners';
 import chroma from 'chroma-js';
 import axios from 'axios';
-import { AppContext } from '../contexts/AppContexts';
+import { AppContext } from '../contexts/AppContexts.jsx';
 import { useNavigate } from 'react-router-dom';
 
 const AllPosts = () => {
   const [loading, setLoading] = useState(true);
-  const { backendUrl, posts, setPosts,hasMore, setHasMore, setPreviousPage } = useContext(AppContext);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const { backendUrl, posts, setPosts, hasMore, setHasMore, setPreviousPage } = useContext(AppContext);
+
   const limit = 6;
   const navigate = useNavigate();
+  const targetRef = useRef(null);
 
+  const fetchPosts = async (isRefresh = false) => {
+    if (isFetchingMore || (!hasMore && !isRefresh)) return;
 
- const fetchPosts = async () => {
-  try {
-    const lastPost = posts[posts.length - 1];
-    const afterId = lastPost ? lastPost._id : null;
+    try {
+      if (isRefresh) {
+        setIsRefreshing(true);
+      } else {
+        setIsFetchingMore(true);
+      }
 
-    const res = await axios.get(
-      `${backendUrl}/api/all-posts?limit=${limit}${afterId ? `&afterId=${afterId}` : ''}`
-    );
+      const lastPost = isRefresh ? null : posts[posts.length - 1];
+      const afterId = lastPost ? lastPost._id : null;
 
-    const newPosts = res.data.posts;
+      const res = await axios.get(
+        `${backendUrl}/api/all-posts?limit=${limit}${afterId ? `&afterId=${afterId}` : ''}`
+      );
 
-    const uniqueNewPosts = newPosts.filter(
-      (post) => !posts.some((p) => p._id === post._id)
-    );
+      const newPosts = res.data.posts;
 
-    setPosts((prev) => [...prev, ...uniqueNewPosts]);
-    setHasMore(res.data.hasMore);
-  } catch (error) {
-    console.log(error);
-  }
-};
+      setPosts((prev) => {
+        if (isRefresh) return newPosts;
+        const uniqueNewPosts = newPosts.filter(
+          (post) => !prev.some((p) => p._id === post._id)
+        );
+        return [...prev, ...uniqueNewPosts];
+      });
 
+      setHasMore(res.data.hasMore);
+    } catch (error) {
+      console.error("Fetch error:", error);
+    } finally {
+      setLoading(false);
+      setIsFetchingMore(false);
+      setIsRefreshing(false);
+    }
+  };
 
-
-const fetchInitialPosts = async () => {
-  try {
-    setLoading(true);
-    const res = await axios.get(`${backendUrl}/api/all-posts?limit=${limit}`);
-    const data = res.data.posts;
-    setPosts(data);
-    setHasMore(res.data.hasMore);
-    setLoading(false);
-    setIsRefreshing(false);
-  } catch (error) {
-    console.log(error);
-    setLoading(false);
-    setIsRefreshing(false);
-  }
-};
-
-
-
+  // ------ INITIAL LOAD ------
   useEffect(() => {
-    if (posts.length === 0) {  
-      fetchInitialPosts();
-    } 
-    else {    
+    if (posts.length === 0) {
+      fetchPosts(true);
+    } else {
       setLoading(false);
     }
   }, []);
-const [isRefreshing, setIsRefreshing] = useState(false);
 
+  // ------ INTERSECTION OBSERVER ------
+  useEffect(() => {
+    const target = targetRef.current;
+    if (!target) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !isFetchingMore) {
+          fetchPosts(false);
+        }
+      },
+      { rootMargin: '200px' }
+    );
+
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [hasMore, isFetchingMore, posts.length]);
+
+  const handlePostClick = (postId) => {
+    setPreviousPage('/all-posts');
+    navigate(`/post/${postId}`);
+  };
 
   return (
-    <>
-      <div className="p-4 sm:p-6 bg-blue-50 min-h-screen">
+    <div className="p-4 sm:p-6 bg-blue-50 min-h-screen">
 
-<div className="flex justify-center items-center">
-  <div className="flex items-center space-x-4">
-    <div className="text-3xl font-bold">All Posts</div>
-  
-  
-<div
-  onClick={() => {
-    setIsRefreshing(true);
-    setPosts([]);
-    setHasMore(true);
-    fetchInitialPosts();
-  }}
-  className={`bg-blue-800 text-white w-8 h-8 p-1 text-2xl rounded-full cursor-pointer flex justify-center items-center shadow-lg transition-transform duration-60 
-    ${isRefreshing ? 'animate-spin pointer-events-none opacity-70' : ''}`}
->
-  ⭮
-</div>
-  </div>
-</div>
+      <div className="flex justify-center items-center">
+        <div className="flex items-center space-x-4">
+          <div className="text-3xl font-bold">All Posts</div>
+          <div
+            onClick={() => fetchPosts(true)}
+            className={`bg-blue-800 text-white w-8 h-8 p-1 text-2xl rounded-full cursor-pointer flex justify-center items-center shadow-lg
+              ${isRefreshing ? 'animate-spin pointer-events-none opacity-70' : ''}`}
+          >⭮</div>
+        </div>
+      </div>
 
-        {!loading && posts.length === 0 && (
-          <p className="text-center mt-10 text-gray-500">No posts found.</p>
-        )}
-        <InfiniteScroll
-          dataLength={posts.length}
-          next={fetchPosts}
-          hasMore={hasMore}
-          loader={
-            <div className="flex justify-center mt-4">
-              <BeatLoader color="#64B5F6" />
-            </div>
-          }
-          endMessage={
-            <p className="text-center mt-4">
-              <b>You have seen all the posts!</b>
-            </p>
-          }
-        >
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-            {posts.map((entry, idx) => (
+      {loading && posts.length === 0 ? (
+        <div className="flex justify-center mt-20"><BeatLoader color="#64B5F6" /></div>
+      ) : posts.length === 0 ? (
+        <p className="text-center mt-10 text-gray-500">No posts found.</p>
+      ) : (
+        <>
+          {/* POSTS GRID */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+            {posts.map((entry) => (
               <article
-                key={idx}
-                onClick={() => {setPreviousPage('/all-posts');navigate(`/post/${entry._id}`)}}
+                key={entry._id}
+                onClick={() => { setPreviousPage('/'); navigate(`/post/${entry._id}`) }}
                 className="bg-white border border-blue-200 rounded-xl shadow-md p-4 flex flex-col cursor-pointer transition-transform transform hover:scale-95 hover:bg-blue-50 duration-300"
               >
                 <img
                   src={entry.uploadUrl}
-                  alt="Diary"
+                  alt="image"
                   className="h-72 w-full object-fill rounded-lg mb-3"
                 />
 
@@ -127,8 +125,7 @@ const [isRefreshing, setIsRefreshing] = useState(false);
                 </div>
 
                 <div className="text-sm text-gray-600 mt-2">
-                  <span className="font-semibold">Posted on: </span>
-                  {new Date(entry.date).toLocaleDateString('en-GB', {
+                  <span className="font-semibold">Posted on: </span>{new Date(entry.date).toLocaleDateString('en-GB', {
                     day: 'numeric',
                     month: 'short',
                     year: 'numeric'
@@ -138,7 +135,7 @@ const [isRefreshing, setIsRefreshing] = useState(false);
                 </div>
 
                 <div className="text-sm mt-2">
-                  <span className="font-semibold text-gray-600">Tags:-</span>
+                  <span className="font-semibold text-gray-600">Topics:-</span>
                   <div className="flex flex-wrap gap-2 mt-1">
                     {entry.topic.map((grp, i) => (
                       <span
@@ -156,29 +153,27 @@ const [isRefreshing, setIsRefreshing] = useState(false);
                 </div>
               </article>
             ))}
-            <div
-              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="fixed bottom-8 right-6 bg-blue-800 text-white w-14 h-14 font-bold text-2xl rounded-full cursor-pointer flex justify-center items-center z-50 shadow-lg hover:scale-110 transition-transform"
-            >
-              ↑
-            </div>
-
           </div>
-        </InfiniteScroll>
 
-      </div>
-    </>
+          {/* TARGET ELEMENT */}
+          <div ref={targetRef} className="h-20 flex justify-center items-center bg-amber-700">
+            {isFetchingMore ? (
+              <BeatLoader color="#64B5F6" />
+            ) : (
+              !hasMore && (
+                <p className="text-center font-semibold text-gray-500">You have seen all the posts!</p>
+              )
+            )}
+          </div>
+        </>
+      )}
+
+      <div
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        className="fixed bottom-8 right-6 bg-blue-800 text-white w-14 h-14 font-bold text-2xl rounded-full cursor-pointer flex justify-center items-center z-50 shadow-lg hover:scale-110 transition-transform"
+      >↑</div>
+    </div>
   );
 };
 
 export default AllPosts;
-
-
-
-
-
-
-
-
-
-
