@@ -45,7 +45,7 @@ const PostDetails = () => {
   return loading ? (<div className='flex justify-center items-center h-screen'><BeatLoader color="#64B5F6" /></div>) : (
 
     <div className="bg-blue-50 py-6 flex justify-center items-center">
-      <div className=" bg-white p-6 rounded-xl w-full max-w-3xl overflow-auto relative shadow-xl">
+      <div className=" bg-white p-6 rounded-xl w-full md:max-w-4xl overflow-auto relative shadow-xl">
         <button
           onClick={() => { previousPage ? navigate(-1) : navigate('/') }}
           className="absolute text-2xl top-1 right-0.5 text-black cursor-pointer hover:scale-110 transition-all duration-100"
@@ -54,8 +54,8 @@ const PostDetails = () => {
         </button>
         <img
           src={post.uploadUrl}
-          alt=""
-          className="w-full h-full max-h-[500px] object-fill rounded mb-4 "
+          alt="image"
+          className="w-full h-suto max-h-[500px] object-fill rounded mb-4"
         />
         <div className="text-xl mt-2 flex justify-start items-center gap-x-1">
           <span className="text-black font-bold">{post.caption}</span>
@@ -72,9 +72,9 @@ const PostDetails = () => {
           by <span className='font-medium'>{post.email}</span>
         </div>
 
-        <div className="font-serif text-base text-gray-800 mt-2 whitespace-pre-wrap">{post.postContent}</div>
+        <div className="font-serif text-base text-gray-800 mt-3 whitespace-pre-wrap break-words">{post.postContent}</div>
 
-        <div className="text-sm mt-2">
+        <div className="text-sm mt-3">
           <span className="font-semibold text-gray-600">Topics:-</span>
           <div className="flex flex-wrap gap-2 mt-1">
             {post.topic.map((grp, i) => (
