@@ -268,7 +268,7 @@ const handleUpload = async (file) => {
             {loading ? (
               <>
                 <ClipLoader size={20} color="#ffffff" />
-                Loading...
+                Generating...
               </>
             ) : (
               '✨ Generate Caption & Content'
