@@ -27,7 +27,7 @@ Rules:
     const response = await axios.post(
       'https://openrouter.ai/api/v1/chat/completions',
       {
-        model: 'meta-llama/llama-3.3-70b-instruct:free',
+        model: 'nvidia/nemotron-nano-9b-v2:free',
         messages: [{ role: 'system', content: systemMessage },
         { role: 'user', content: `Generate caption & content based on this description: "${description}"` }],
         response_format: {
